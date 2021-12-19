@@ -8,7 +8,15 @@ const prisma = new PrismaClient();
 
 (async () => {
   try {
-    const server = new ApolloServer({ typeDefs, resolvers });
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      context: ({ req, res }) => ({
+        req,
+        res,
+        prisma,
+      }),
+    });
     await server.start();
     server.applyMiddleware({ app });
 
