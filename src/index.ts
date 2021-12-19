@@ -27,6 +27,6 @@ const prisma = new PrismaClient();
     console.log(e);
     process.exit(1);
   } finally {
-    prisma.$disconnect();
+    await prisma.$disconnect();
   }
 })();
