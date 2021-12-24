@@ -1,8 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloError, ApolloServer } from "apollo-server-express";
 import express from "express";
+import { GraphQLError } from "graphql";
+import { authMiddleWare } from "./middleware/authMiddleware";
 import { resolvers } from "./resolvers";
 import { typeDefs } from "./typeDefs";
+import { CustomError } from "./types/error";
 const app = express();
 const prisma = new PrismaClient();
 
@@ -16,8 +19,14 @@ const prisma = new PrismaClient();
         res,
         prisma,
       }),
+      formatError: (error: GraphQLError) => {
+        return error.originalError instanceof ApolloError
+          ? error
+          : new GraphQLError(error.message);
+      },
     });
     await server.start();
+    app.use(authMiddleWare);
     server.applyMiddleware({ app });
 
     app.listen(process.env.PORT, () => {

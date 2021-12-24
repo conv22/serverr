@@ -1,48 +1,40 @@
-import bcrypt from "bcrypt";
+import { userBodyLogin, userBodyRegister } from "../types/auth";
 import { myContext } from "../types/context";
-import { generateAccessToken, validatePassword } from "../utils/auth";
-
-type userBody = {
-  username: string | null;
-  password: string | null;
-};
+import { generateAccessToken } from "../utils/auth";
+import { validateLogin, validateRegister } from "../utils/user";
+import { hashPassword } from "./../utils/auth";
 
 export const authResolver = {
   Mutation: {
-    login: async (
-      _parent: any,
-      { username, password }: userBody,
-      { prisma }: myContext
-    ) => {
-      if (!username || !password) return;
+    login: async (_parent: any, body: userBodyLogin, { prisma }: myContext) => {
+      if (!validateLogin(body)) return;
       const user = await prisma.user.findUnique({
         where: {
-          username,
+          username: body.username,
         },
       });
       if (!user) return;
-      const isValidPassword = validatePassword(password, user.password);
       const token = generateAccessToken(user.id);
-      if (!isValidPassword) return;
     },
     register: async (
       _parent: any,
-      { username, password }: userBody,
+      body: userBodyRegister,
       { prisma }: myContext
     ) => {
-      if (!username || !password) return;
+      if (!validateRegister(body)) return;
       const userExist = await prisma.user.findUnique({
         where: {
-          username,
+          username: body.username,
         },
       });
       if (userExist) return;
 
       const newUser = {
-        username,
-        password: await bcrypt.hash(password, 10),
+        username: body.username,
+        password: await hashPassword(body.password),
       };
-      await prisma.user.create({ data: newUser });
+      const savedUser = await prisma.user.create({ data: newUser });
+      const token = generateAccessToken(savedUser.id);
     },
   },
 };
