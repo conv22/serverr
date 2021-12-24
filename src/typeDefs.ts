@@ -10,4 +10,8 @@ export const typeDefs = gql`
   type Query {
     users: [User]
   }
+  type Mutation {
+    login: User
+    register: User
+  }
 `;

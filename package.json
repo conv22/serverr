@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "sudo docker run --env-file .env -p 4000:4000 myserver",
+    "start": "yarn ts-node ./src/index.ts",
     "migrate": "npx prisma migrate dev --name init"
   },
   "devDependencies": {
