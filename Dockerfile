@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 4000
 
 # RUN THE APP
-CMD ["yarn", "ts-node", "./src/index.ts"]
+CMD ["yarn", "ts-node-dev", "./src/index.ts"]
