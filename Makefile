@@ -6,3 +6,7 @@ build:
 		sudo docker build . -t myserver
 stop:
 		sudo docker stop myapp
+compose: 
+		sudo docker-compose up
+composedown:
+		sudo docker-compose down
